@@ -30,4 +30,9 @@ void DeviceToLogical(CefMouseEvent& value, float device_scale_factor) {
   value.y = DeviceToLogical(value.y, device_scale_factor);
 }
 
+void DeviceToLogical(CefMouseEvent& value, float device_scale_factor_width, float device_scale_factor_height) {
+  value.x = DeviceToLogical(value.x, device_scale_factor_width);
+  value.y = DeviceToLogical(value.y, device_scale_factor_height);
+}
+
 }  // namespace client
