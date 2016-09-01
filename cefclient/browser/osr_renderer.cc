@@ -37,6 +37,7 @@
 #define VERIFY_NO_ERROR
 #endif
 
+#include <cefclient/browser/osr_window_win.h>
 namespace client {
 
 OsrRenderer::Settings::Settings()
