@@ -258,9 +258,6 @@ class CefDOMNode : public virtual CefBase {
   // Returns the next sibling node.
   ///
   /*--cef()--*/
-#ifdef GetNextSibling // Exists in windowsx.h
-#undef GetNextSibling
-#endif
   virtual CefRefPtr<CefDOMNode> GetNextSibling() =0;
 
   ///
@@ -326,6 +323,12 @@ class CefDOMNode : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual CefString GetElementInnerText() =0;
+
+  ///
+  // Returns the bounds of the element.
+  ///
+  /*--cef()--*/
+  virtual CefRect GetElementBounds() =0;
 };
 
 #endif  // CEF_INCLUDE_CEF_DOM_H_
