@@ -206,17 +206,13 @@ class CefV8Context : public virtual CefBase {
   virtual bool IsSame(CefRefPtr<CefV8Context> that) =0;
 
   ///
-  // Execute a string of JavaScript code in this V8 context. The |script_url|
-  // parameter is the URL where the script in question can be found, if any.
-  // The |start_line| parameter is the base line number to use for error
-  // reporting. On success |retval| will be set to the return value, if any, and
-  // the function will return true. On failure |exception| will be set to the
+  // Evaluates the specified JavaScript code using this context's global object.
+  // On success |retval| will be set to the return value, if any, and the
+  // function will return true. On failure |exception| will be set to the
   // exception, if any, and the function will return false.
   ///
-  /*--cef(optional_param=script_url)--*/
+  /*--cef()--*/
   virtual bool Eval(const CefString& code,
-                    const CefString& script_url,
-                    int start_line,
                     CefRefPtr<CefV8Value>& retval,
                     CefRefPtr<CefV8Exception>& exception) =0;
 };
@@ -276,74 +272,6 @@ class CefV8Accessor : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual bool Set(const CefString& name,
-                   const CefRefPtr<CefV8Value> object,
-                   const CefRefPtr<CefV8Value> value,
-                   CefString& exception) =0;
-};
-
-///
-// Interface that should be implemented to handle V8 interceptor calls. The
-// methods of this class will be called on the thread associated with the V8
-// interceptor. Interceptor's named property handlers (with first argument of
-// type CefString) are called when object is indexed by string. Indexed property
-// handlers (with first argument of type int) are called when object is indexed
-// by integer.
-///
-/*--cef(source=client)--*/
-class CefV8Interceptor : public virtual CefBase {
-public:
-  ///
-  // Handle retrieval of the interceptor value identified by |name|. |object| is
-  // the receiver ('this' object) of the interceptor. If retrieval succeeds, set
-  // |retval| to the return value. If the requested value does not exist, don't
-  // set either |retval| or |exception|. If retrieval fails, set |exception| to
-  // the exception that will be thrown. If the property has an associated
-  // accessor, it will be called only if you don't set |retval|.
-  // Return true if interceptor retrieval was handled, false otherwise.
-  ///
-  /*--cef(capi_name=get_byname)--*/
-  virtual bool Get(const CefString& name,
-                   const CefRefPtr<CefV8Value> object,
-                   CefRefPtr<CefV8Value>& retval,
-                   CefString& exception) =0;
-
-  ///
-  // Handle retrieval of the interceptor value identified by |index|. |object|
-  // is the receiver ('this' object) of the interceptor. If retrieval succeeds,
-  // set |retval| to the return value. If the requested value does not exist,
-  // don't set either |retval| or |exception|. If retrieval fails, set
-  // |exception| to the exception that will be thrown.
-  // Return true if interceptor retrieval was handled, false otherwise.
-  ///
-  /*--cef(capi_name=get_byindex,index_param=index)--*/
-  virtual bool Get(int index,
-                   const CefRefPtr<CefV8Value> object,
-                   CefRefPtr<CefV8Value>& retval,
-                   CefString& exception) =0;
-
-  ///
-  // Handle assignment of the interceptor value identified by |name|. |object|
-  // is the receiver ('this' object) of the interceptor. |value| is the new
-  // value being assigned to the interceptor. If assignment fails, set
-  // |exception| to the exception that will be thrown. This setter will always
-  // be called, even when the property has an associated accessor.
-  // Return true if interceptor assignment was handled, false otherwise.
-  ///
-  /*--cef(capi_name=set_byname)--*/
-  virtual bool Set(const CefString& name,
-                   const CefRefPtr<CefV8Value> object,
-                   const CefRefPtr<CefV8Value> value,
-                   CefString& exception) =0;
-
-  ///
-  // Handle assignment of the interceptor value identified by |index|. |object|
-  // is the receiver ('this' object) of the interceptor. |value| is the new
-  // value being assigned to the interceptor. If assignment fails, set
-  // |exception| to the exception that will be thrown.
-  // Return true if interceptor assignment was handled, false otherwise.
-  ///
-  /*--cef(capi_name=set_byindex,index_param=index)--*/
-  virtual bool Set(int index,
                    const CefRefPtr<CefV8Value> object,
                    const CefRefPtr<CefV8Value> value,
                    CefString& exception) =0;
@@ -476,16 +404,14 @@ class CefV8Value : public virtual CefBase {
   static CefRefPtr<CefV8Value> CreateString(const CefString& value);
 
   ///
-  // Create a new CefV8Value object of type object with optional accessor and/or
-  // interceptor. This method should only be called from within the scope of a
+  // Create a new CefV8Value object of type object with optional accessor. This
+  // method should only be called from within the scope of a
   // CefRenderProcessHandler, CefV8Handler or CefV8Accessor callback, or in
   // combination with calling Enter() and Exit() on a stored CefV8Context
   // reference.
   ///
-  /*--cef(optional_param=accessor, optional_param=interceptor)--*/
-  static CefRefPtr<CefV8Value> CreateObject(
-      CefRefPtr<CefV8Accessor> accessor,
-      CefRefPtr<CefV8Interceptor> interceptor);
+  /*--cef(optional_param=accessor)--*/
+  static CefRefPtr<CefV8Value> CreateObject(CefRefPtr<CefV8Accessor> accessor);
 
   ///
   // Create a new CefV8Value object of type array with the specified |length|.
@@ -589,37 +515,43 @@ class CefV8Value : public virtual CefBase {
   virtual bool IsSame(CefRefPtr<CefV8Value> that) =0;
 
   ///
-  // Return a bool value.
+  // Return a bool value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual bool GetBoolValue() =0;
 
   ///
-  // Return an int value.
+  // Return an int value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual int32 GetIntValue() =0;
 
   ///
-  // Return an unsigned int value.
+  // Return an unisgned int value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual uint32 GetUIntValue() =0;
 
   ///
-  // Return a double value.
+  // Return a double value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual double GetDoubleValue() =0;
 
   ///
-  // Return a Date value.
+  // Return a Date value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual CefTime GetDateValue() =0;
 
   ///
-  // Return a string value.
+  // Return a string value.  The underlying data will be converted to if
+  // necessary.
   ///
   /*--cef()--*/
   virtual CefString GetStringValue() =0;

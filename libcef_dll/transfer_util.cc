@@ -7,10 +7,10 @@
 void transfer_string_list_contents(cef_string_list_t fromList,
                                    StringList& toList)
 {
-  size_t size = cef_string_list_size(fromList);
+  int size = cef_string_list_size(fromList);
   CefString value;
 
-  for(size_t i = 0; i < size; i++) {
+  for(int i = 0; i < size; i++) {
      cef_string_list_value(fromList, i, value.GetWritableStruct());
      toList.push_back(value);
   }
@@ -27,10 +27,10 @@ void transfer_string_list_contents(const StringList& fromList,
 void transfer_string_map_contents(cef_string_map_t fromMap,
                                   StringMap& toMap)
 {
-  size_t size = cef_string_map_size(fromMap);
+  int size = cef_string_map_size(fromMap);
   CefString key, value;
   
-  for(size_t i = 0; i < size; ++i) {
+  for(int i = 0; i < size; ++i) {
     cef_string_map_key(fromMap, i, key.GetWritableStruct());
     cef_string_map_value(fromMap, i, value.GetWritableStruct());
     
@@ -49,10 +49,10 @@ void transfer_string_map_contents(const StringMap& fromMap,
 void transfer_string_multimap_contents(cef_string_multimap_t fromMap,
                                        StringMultimap& toMap)
 {
-  size_t size = cef_string_multimap_size(fromMap);
+  int size = cef_string_multimap_size(fromMap);
   CefString key, value;
 
-  for(size_t i = 0; i < size; ++i) {
+  for(int i = 0; i < size; ++i) {
     cef_string_multimap_key(fromMap, i, key.GetWritableStruct());
     cef_string_multimap_value(fromMap, i, value.GetWritableStruct());
     

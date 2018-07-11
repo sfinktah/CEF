@@ -27,7 +27,8 @@
 # CMakeLists.txt              Bootstrap that sets up the CMake environment.
 # cmake/*.cmake               CEF configuration files shared by all targets.
 # libcef_dll/CMakeLists.txt   Defines the libcef_dll_wrapper target.
-# tests/*/CMakeLists.txt      Defines the test application target.
+# cefclient/CMakeLists.txt    Defines the cefclient target.
+# cefsimple/CMakeLists.txt    Defines the cefsimple target.
 #
 # See the "TODO:" comments below for guidance on how to integrate this CEF
 # binary distribution into a new or existing CMake project.
@@ -199,10 +200,8 @@ add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 # Include application targets.
 # Comes from the <target>/CMakeLists.txt file in the current directory.
 # TODO: Change these lines to match your project target when you copy this file.
-add_subdirectory(tests/cefclient)
-add_subdirectory(tests/cefsimple)
-add_subdirectory(tests/gtest)
-add_subdirectory(tests/ceftests)
+add_subdirectory(cefclient)
+add_subdirectory(cefsimple)
 
 # Display configuration settings.
 PRINT_CEF_CONFIG()
